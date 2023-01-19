@@ -1,93 +1,52 @@
+const express = require("express");
 
-const { findById } = require("../model/tasks");
-const model = require("../model/tasks")
+const app =express();
+const task_model = require("../model/tasks");
+app.use(express.json())
 
-
-const getAlltasks = async (req,res) => {
-    // res.send("welocme to Home")
-try {
-    
-    const doc = await model.find({});
-    console.log(doc)
-    res.status(201).json({doc,amount:doc.length});
-
-} catch (error) {
-    console.log(error)
-}
-    
-}
-
-
-const createTask  = async (req,res)=>{
-try {
-    console.log(req.body);
-
-    const task = new model(req.body);
-    await task.save();
-    
-    res.status(201).json({task})
-} catch (error) {
-     console.log(error)
-}
-} 
-
-
-const GetTask  = async (req,res)=>{
-    // res.send(" single get task")
-try {
-    // res.json({id:req.params.id})
-    const {id:task}  = req.params;
-
-    const doc = await model.findOne({_id:task});
-    if(!doc){
-        return res.status(404).json({msg:"No task with Id "})
-    }
-    res.status(201).json({doc})
-    
-} catch (error) {
-   console.log(error) 
-}
-
-}
-
-const updateTask  = async(req,res)=>{
-  try {
-    const {id:task}  = req.params;
-   
-    const doc = await model.findOneAndUpdate({_id:task},req.body,{
-        new:true,
-        runValidators:true
-    });
-    res.status(201).json({doc})
-    
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-
-
-
-const deleteTask  =  async(req,res)=>{
-    // res.send(" single delete ask")
+const PostRequest = async(req,res)=>{
+    console.log(req.body)
     try {
-  
-    const {id:task}  = req.params;
-  
-    const data  = await model.findOneAndDelete({_id:task})
-    if(!data){
-        return res.status(404).json({msg:`No task with Id:${task} `})
-    }
-    res.status(201).json({data})
-    // res.status(200).json({data:null,status:"success "})
-        
+
+        const data = new task_model({
+            name:req.body.name,
+            price:req.body.price,
+            image:req.body.image,
+            description:req.body.description,
+
+        })
+
+        const save_data = await data.save();
+
+        res.status(200).send({messgae:save_data})
+
+
     } catch (error) {
         console.log(error)
+        // res.status(404).send({messgae:error})
+        
+    }
+}
+const Data_get = async(req,res)=>{
+    try {
+        const data_show = await task_model.find({});
+        res.status(200).send({message:data_show})
+    } catch (error) {
+        
     }
 }
 
 
-module.exports = {
-    getAlltasks,createTask,GetTask,updateTask,deleteTask
+
+const Data_delete = async(req,res)=>{
+    try {
+        const {id:task}  = req.params;
+        const data = await task_model.findOneAndDelete({_id:task})
+res.status(200).send({message:data})
+    } catch (error) {
+        console.log(error)
+        res.status(400).send({message:error})
+    }
 }
 
+module.exports = {PostRequest,Data_get,Data_delete}

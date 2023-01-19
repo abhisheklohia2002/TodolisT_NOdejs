@@ -1,27 +1,29 @@
 const express = require("express");
 const app = express();
 const tasks = require("./routes/tasks")
-const port = 5000 || process.env.PORT;
+const port = 5000 
 const connectted = require("./db/database")
-const notFound = require("./middleware/not_found")
-
-
-
-
 require('dotenv').config();
 
 
-//middleware 
-// app.use(express.static("./public"))
-app.use(express.json())
+const  cors = require("cors");
 
-// app.use(notFound) //*
+app.use(express.json())
+app.use(cors({
+    origin:"*"
+}))
+
+
+
+
+
+
 
 
 
 //routes 
  
-app.use("/api/v1/tasks",tasks); // one get all the task 
+app.use("/api",tasks); // one get all the task 
 
 
 
